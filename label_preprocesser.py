@@ -10,7 +10,7 @@ groups = {
     8: "Keyboard", # Clavi
     9: "Percussion", # Celesta
     10: "Percussion", # Glockenspiel
-    #11: "Music Box", # Music Box
+    11: "Percussion", # Music Box
     12: "Percussion", # Vibraphone
     13: "Percussion", # Marimba
     14: "Percussion", # Xylophone
@@ -21,7 +21,7 @@ groups = {
     19: "Organ", # Rock Organ
     20: "Organ", # Church Organ
     21: "Organ", # Reed Organ
-    #22: "Woodwind", # Accordion
+    22: "Woodwind", # Accordion
     23: "Woodwind", # Harmonica
     24: "Woodwind", # Tango Accordion
     25: "Guitar", # Acoustic Guitar (nylon)
@@ -128,4 +128,19 @@ groups = {
     126: "Percussion", # Helicopter
     127: "Percussion", # Applause
     128: "Percussion" # Gunshot
+}
+
+num_groups = {
+    "Keyboard" : 1,
+    "Guitar" : 2,
+    "Strings" : 3,
+    "Percussion" : 4,
+    "Organ" : 5,
+    "Bass" : 6,
+    "Brass" : 7,
+    "Woodwind" : 8,
+    "Flute" : 9,
+    "Synth Lead/Pad" : 10,
+    "Synth" : 11,
+    "World Instrument" : 12
 }
