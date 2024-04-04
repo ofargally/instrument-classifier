@@ -150,6 +150,6 @@ num_groups = {
 def add_group_column(fileName : str):
     df = pd.read_csv(fileName)
     df['Instrument Group'] = df['instrument'].map(groups).map(num_groups)
-    print(df.head(5))
+    df.to_csv(fileName, index=False)
 
 add_group_column('1727.csv')
