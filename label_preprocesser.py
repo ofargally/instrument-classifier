@@ -29,45 +29,45 @@ groups = {
     27: "Guitar", # Electric Guitar (jazz)
     28: "Guitar", # Electric Guitar (clean)
     29: "Guitar", # Electric Guitar (muted)
-    30: "Overdriven Guitar",
-    31: "Distortion Guitar",
-    32: "Guitar harmonics",
-    33: "Acoustic Bass",
-    34: "Electric Bass (finger)",
-    35: "Electric Bass (pick)",
-    36: "Fretless Bass",
-    37: "Slap Bass 1",
-    38: "Slap Bass 2",
-    39: "Synth Bass 1",
-    40: "Synth Bass 2",
-    41: "Violin",
-    42: "Viola",
-    43: "Cello",
-    44: "Contrabass",
-    45: "Tremolo Strings",
-    46: "Pizzicato Strings",
-    47: "Orchestral Harp",
-    48: "Timpani",
-    49: "String Ensemble 1",
-    50: "String Ensemble 2",
-    51: "SynthStrings 1",
-    52: "SynthStrings 2",
-    53: "Choir Aahs",
-    54: "Voice Oohs",
-    55: "Synth Voice",
-    56: "Orchestra Hit",
-    57: "Trumpet",
-    58: "Trombone",
-    59: "Tuba",
-    60: "Muted Trumpet",
-    61: "French Horn",
-    62: "Brass Section",
-    63: "SynthBrass 1",
-    64: "SynthBrass 2",
-    65: "Soprano Sax",
-    66: "Alto Sax",
-    67: "Tenor Sax",
-    68: "Baritone Sax",
+    30: "Guitar", # Overdriven Guitar
+    31: "Guitar", # Distortion Guitar
+    32: "Guitar", # Guitar harmonics
+    33: "Bass", # Acoustic Bass
+    34: "Bass", # Electric Bass (finger)
+    35: "Bass", # Electric Bass (pick)
+    36: "Bass", # Fretless Bass
+    37: "Bass", # Slap Bass 1
+    38: "Bass", # Slap Bass 2
+    39: "Bass", # Synth Bass 1
+    40: "Bass", # Synth Bass 2
+    41: "Strings", # Violin
+    42: "Strings", # Viola
+    43: "Strings", # Cello
+    44: "Strings", # Contrabass
+    45: "Strings", # Tremolo Strings
+    46: "Strings", # Pizzicato Strings
+    47: "Strings", # Orchestral Harp
+    48: "Percussion", # Timpani
+    49: "Strings", # String Ensemble 1
+    50: "Strings", # String Ensemble 2
+    51: "Strings", # SynthStrings 1
+    52: "Strings", # SynthStrings 2
+    53: "Vocals", # Choir Aahs
+    54: "Vocals", # Voice Oohs
+    55: "Vocals", # Synth Voice
+    56: "Strings", # Orchestra Hit
+    57: "Brass", # Trumpet
+    58: "Brass", # Trombone
+    59: "Brass", # Tuba
+    60: "Brass", # Muted Trumpet
+    61: "Brass", # French Horn
+    62: "Brass", # Brass Section
+    63: "Brass", # SynthBrass 1
+    64: "Brass", # SynthBrass 2
+    65: "Woodwinds", # Soprano Sax
+    66: "Woodwinds", # Alto Sax
+    67: "Woodwinds", # Tenor Sax
+    68: "Woodwinds", # Baritone Sax
     69: "Oboe",
     70: "English Horn",
     71: "Bassoon",
