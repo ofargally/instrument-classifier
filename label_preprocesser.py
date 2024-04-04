@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+
 groups = {
     1: "Keyboard", # Acoustic Grand Piano
     2: "Keyboard", # Bright Acoustic Piano
@@ -144,3 +146,10 @@ num_groups = {
     "Synth" : 11,
     "World Instrument" : 12
 }
+
+def add_group_column(fileName : str):
+    df = pd.read_csv(fileName)
+    df['Instrument Group'] = df['instrument'].map(groups).map(num_groups)
+    print(df.head(5))
+
+add_group_column('1727.csv')
