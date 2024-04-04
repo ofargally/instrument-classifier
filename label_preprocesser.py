@@ -64,68 +64,68 @@ groups = {
     62: "Brass", # Brass Section
     63: "Brass", # SynthBrass 1
     64: "Brass", # SynthBrass 2
-    65: "Woodwinds", # Soprano Sax
-    66: "Woodwinds", # Alto Sax
-    67: "Woodwinds", # Tenor Sax
-    68: "Woodwinds", # Baritone Sax
-    69: "Oboe",
-    70: "English Horn",
-    71: "Bassoon",
-    72: "Clarinet",
-    73: "Piccolo",
-    74: "Flute",
-    75: "Recorder",
-    76: "Pan Flute",
-    77: "Blown Bottle",
-    78: "Shakuhachi",
-    79: "Whistle",
-    80: "Ocarina",
-    81: "Lead 1 (square)",
-    82: "Lead 2 (sawtooth)",
-    83: "Lead 3 (calliope)",
-    84: "Lead 4 (chiff)",
-    85: "Lead 5 (charang)",
-    86: "Lead 6 (voice)",
-    87: "Lead 7 (fifths)",
-    88: "Lead 8 (bass + lead)",
-    89: "Pad 1 (new age)",
-    90: "Pad 2 (warm)",
-    91: "Pad 3 (polysynth)",
-    92: "Pad 4 (choir)",
-    93: "Pad 5 (bowed)",
-    94: "Pad 6 (metallic)",
-    95: "Pad 7 (halo)",
-    96: "Pad 8 (sweep)",
-    97: "FX 1 (rain)",
-    98: "FX 2 (soundtrack)",
-    99: "FX 3 (crystal)",
-    100: "FX 4 (atmosphere)",
-    101: "FX 5 (brightness)",
-    102: "FX 6 (goblins)",
-    103: "FX 7 (echoes)",
-    104: "FX 8 (sci-fi)",
-    105: "Sitar",
-    106: "Banjo",
-    107: "Shamisen",
-    108: "Koto",
-    109: "Kalimba",
-    110: "Bag pipe",
-    111: "Fiddle",
-    112: "Shanai",
-    113: "Tinkle Bell",
-    114: "Agogo",
-    115: "Steel Drums",
-    116: "Woodblock",
-    117: "Taiko Drum",
-    118: "Melodic Tom",
-    119: "Synth Drum",
-    120: "Reverse Cymbal",
-    121: "Guitar Fret Noise",
-    122: "Breath Noise",
-    123: "Seashore",
-    124: "Bird Tweet",
-    125: "Telephone Ring",
-    126: "Helicopter",
-    127: "Applause",
-    128: "Gunshot"
+    65: "Woodwind", # Soprano Sax
+    66: "Woodwind", # Alto Sax
+    67: "Woodwind", # Tenor Sax
+    68: "Woodwind", # Baritone Sax
+    69: "Woodwind", # Oboe
+    70: "Woodwind", # English Horn
+    71: "Woodwind", # Bassoon
+    72: "Woodwind", # Clarinet
+    73: "Flute", # Piccolo
+    74: "Flute", # Flute
+    75: "Flute", # Recorder
+    76: "Flute", # Pan Flute
+    77: "Flute", # Blown Bottle
+    78: "Flute", # Shakuhachi
+    79: "Flute", # Whistle
+    80: "Flute", # Ocarina
+    81: "Synth Lead/Pad", # Lead 1 (square)
+    82: "Synth Lead/Pad", # Lead 2 (sawtooth)
+    83: "Synth Lead/Pad", # Lead 3 (calliope)
+    84: "Synth Lead/Pad", # Lead 4 (chiff)
+    85: "Synth Lead/Pad", # Lead 5 (charang)
+    86: "Synth Lead/Pad", # Lead 6 (voice)
+    87: "Synth Lead/Pad", # Lead 7 (fifths)
+    88: "Synth Lead/Pad", # Lead 8 (bass + lead)
+    89: "Synth Lead/Pad", # Pad 1 (new age)
+    90: "Synth Lead/Pad", # Pad 2 (warm)
+    91: "Synth Lead/Pad", # Pad 3 (polysynth)
+    92: "Synth Lead/Pad", # Pad 4 (choir)
+    93: "Synth Lead/Pad", # Pad 5 (bowed)
+    94: "Synth Lead/Pad", # Pad 6 (metallic)
+    95: "Synth Lead/Pad", # Pad 7 (halo)
+    96: "Synth Lead/Pad", # Pad 8 (sweep)
+    97: "Synth", # FX 1 (rain)
+    98: "Synth", # FX 2 (soundtrack)
+    99: "Synth", # FX 3 (crystal)
+    100: "Synth", # FX 4 (atmosphere)
+    101: "Sytn", # FX 5 (brightness)
+    102: "Synth", # FX 6 (goblins)
+    103: "Synth", # FX 7 (echoes)
+    104: "Synth", # FX 8 (sci-fi)
+    105: "World Instrument", # Sitar
+    106: "World Instrument", # Banjo
+    107: "World Instrument", # Shamisen
+    108: "World Instrument", # Koto
+    109: "World Instrument", # Kalimba
+    110: "World Instrument", # Bag pipe
+    111: "World Instrument", # Fiddle
+    112: "World Instrument", # Shanai
+    113: "Percussion", # Tinkle Bell
+    114: "Percussion", # Agogo
+    115: "Percussion", # Steel Drums
+    116: "Percussion", # Woodblock
+    117: "Percussion", # Taiko Drum
+    118: "Percussion", # Melodic Tom
+    119: "Synth", # Synth Drum
+    120: "Percussion", # Reverse Cymbal
+    121: "Guitar", # Guitar Fret
+    122: "Vocals", # Breath Noise
+    123: "Percussion", # Seashore
+    124: "Percussion", # Bird Tweet
+    125: "Percussion", # Telephone Ring
+    126: "Percussion", # Helicopter
+    127: "Percussion", # Applause
+    128: "Percussion" # Gunshot
 }
