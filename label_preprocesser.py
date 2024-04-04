@@ -1,5 +1,5 @@
-import numpy as np
 import pandas as pd
+import os
 
 groups = {
     1: "Keyboard", # Acoustic Grand Piano
@@ -152,4 +152,9 @@ def add_group_column(fileName : str):
     df['Instrument Group'] = df['instrument'].map(groups).map(num_groups)
     df.to_csv(fileName, index=False)
 
-add_group_column('1727.csv')
+directory = 'C:/Users/ataub/OneDrive/Desktop/CSProjects/instrument-classifier/labels/train_labels'
+for filename in os.listdir(directory):
+    f = os.path.join(directory, filename)
+    if os.path.isfile(f):
+        add_group_column(f)
+        print(f'{f} Complete')
