@@ -180,11 +180,11 @@ def time_intervals_to_csv(fileName : str, timeInterval: int):
 # Helper function for time_intervals_to_csv
 def calculate_chunks(start_time, end_time, time_interval):
     chunks = []
-    current_time = start_time
+    chunk_start = (start_time // time_interval) * time_interval
     chunk_number = (start_time // time_interval) + 1
-    while current_time < end_time:
+    while chunk_start < end_time:
         chunks.append(chunk_number)
-        current_time += time_interval
+        chunk_start += time_interval
         chunk_number += 1
     return chunks
 
@@ -195,5 +195,5 @@ def add_all_time_chunks(directory: str, timeInterval: int):
             time_intervals_to_csv(f, timeInterval)
             print(f'{f} Complete')
 
-directory = 'C:/Users/ataub/OneDrive/Desktop/CSProjects/instrument-classifier/labels/test_labels'
+directory = 'C:/Users/ataub/OneDrive/Desktop/CSProjects/instrument-classifier/labels/train_labels'
 add_all_time_chunks(directory, 86200)
