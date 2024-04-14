@@ -152,9 +152,48 @@ def add_group_column(fileName : str):
     df['Instrument Group'] = df['instrument'].map(groups).map(num_groups)
     df.to_csv(fileName, index=False)
 
-directory = 'C:/Users/ataub/OneDrive/Desktop/CSProjects/instrument-classifier/labels/train_labels'
-for filename in os.listdir(directory):
-    f = os.path.join(directory, filename)
-    if os.path.isfile(f):
-        add_group_column(f)
-        print(f'{f} Complete')
+def add_groups_to_csv():
+    directory = 'C:/Users/ataub/OneDrive/Desktop/CSProjects/instrument-classifier/labels/train_labels'
+    for filename in os.listdir(directory):
+        f = os.path.join(directory, filename)
+        if os.path.isfile(f):
+            add_group_column(f)
+            print(f'{f} Complete')
+
+def time_intervals_to_csv(fileName : str, timeInterval: int):
+    """
+    For each note in the provided CSV, adds a new entry called 'Time Chunks'.
+    This column holds a list of chunks of time in which the note is played.
+    Example: If timeInterval is 43100 and one note has a start time of 2000 and
+    an end time of 90000, we add [1,2,3] to this column.
+
+    Params:
+        fileName (str): name of the CSV to modify
+        timeInterval: how many Hz to capture in each chunk of time
+    Returns:
+        None
+    """
+    df = pd.read_csv(fileName)
+    df['Time Chunks'] = df.apply(lambda row: calculate_chunks(row['start_time'], row['end_time'], timeInterval), axis=1)
+    df.to_csv(fileName, index=False)
+
+# Helper function for time_intervals_to_csv
+def calculate_chunks(start_time, end_time, time_interval):
+    chunks = []
+    current_time = start_time
+    chunk_number = (start_time // time_interval) + 1
+    while current_time < end_time:
+        chunks.append(chunk_number)
+        current_time += time_interval
+        chunk_number += 1
+    return chunks
+
+def add_all_time_chunks(directory: str, timeInterval: int):
+    for filename in os.listdir(directory):
+        f = os.path.join(directory, filename)
+        if os.path.isfile(f):
+            time_intervals_to_csv(f, timeInterval)
+            print(f'{f} Complete')
+
+directory = 'C:/Users/ataub/OneDrive/Desktop/CSProjects/instrument-classifier/labels/test_labels'
+add_all_time_chunks(directory, 86200)
