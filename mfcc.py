@@ -14,11 +14,11 @@ for filename in os.listdir(directory):
 
         audiofile = f
 
-        signal, sr = librosa.load(audiofile)
+        signal, sr = librosa.load(audiofile) 
 
         length = len(signal)/ sr #length of the audio file used to get the intervals 
-    
-
+        
+        #THESE LIKELY MAY NEED TO BE TUNED LATER!!!
         hop_length = int(sr * 0.0116) #hop length 11.6 ms
         step = hop_length / sr 
         n_fft = int(sr * .0464) #block size 46.4 ms 
@@ -38,17 +38,3 @@ for filename in os.listdir(directory):
 
         #print(mfccs)
         df.to_csv(filepath, index=False)
-#plotting the mfcc based on time. 
-#plt.figure(figsize=(25,10))
-#librosa.display.specshow(mfccs, x_axis = "time", sr = sr)
-#plt.colorbar(format = "%+2f")
-#plt.show()
-
-
-#commented out for now since im not sure what the delta is. 
-#delta_mfccs = librosa.feature.delta(mfccs)
-
-#plt.figure(figsize=(25,10))
-#librosa.display.specshow(delta_mfccs, x_axis = "time", sr = sr)
-#plt.colorbar(format = "%+2f")
-#plt.show()
