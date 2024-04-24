@@ -19,7 +19,9 @@ def instruments_to_mfcc(data_filename : str, mfcc_filename : str) :
     """
     data_df = pd.read_csv(data_filename)
     mfcc_df = pd.read_csv(mfcc_filename)
-    for index, row in data_df.iterrows():
+    mfcc_df['Instruments'] = None
+    # Iterate over each row in csv_df
+    for index, row in csv_df.iterrows():
         instrument_group = row['Instrument Group']
         time_chunks_string = row['Time Chunks']
         
@@ -31,10 +33,8 @@ def instruments_to_mfcc(data_filename : str, mfcc_filename : str) :
             # Convert time chunk to integer
             time_chunk = int(time_chunk)
             
-            # Check if the value already exists in the column
-            if not mfcc_df.loc[index, str(time_chunk)]:
-                # Add instrument group to column n of mfcc_df
-                mfcc_df.loc[index, str(time_chunk)] = instrument_group
+            # Add instrument group to corresponding row in 'Instruments' column of mfcc_df
+            mfcc_df.loc[time_chunk, 'Instruments'] = instrument_group
     
     mfcc_df.to_csv(mfcc_filename, index=False)
 
