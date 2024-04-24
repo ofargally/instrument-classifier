@@ -4,11 +4,39 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import pandas as pd
+import json
+
 from label_preprocesser import time_intervals_to_csv
 
 
 directory = './wav_trial_split/'
 save_path = './mfccs/training'
+
+def instruments_to_mfcc(data_filename : str, mfcc_filename : str) :
+    """
+    Takes the name of a train_labels or test_labels csv and a corresponding MFCC csv, and
+    assigns instrument groups to each entry of the MFCC csv
+    """
+    data_df = pd.read_csv(data_filename)
+    mfcc_df = pd.read_csv(mfcc_filename)
+    for index, row in data_df.iterrows():
+        instrument_group = row['Instrument Group']
+        time_chunks_string = row['Time Chunks']
+        
+        # Convert the string representation of list to a Python list
+        time_chunks_list = json.loads(time_chunks_string)
+        
+        # Iterate over each time chunk in the list
+        for time_chunk in time_chunks_list:
+            # Convert time chunk to integer
+            time_chunk = int(time_chunk)
+            
+            # Check if the value already exists in the column
+            if not mfcc_df.loc[index, str(time_chunk)]:
+                # Add instrument group to column n of mfcc_df
+                mfcc_df.loc[index, str(time_chunk)] = instrument_group
+    
+    mfcc_df.to_csv(mfcc_filename, index=False)
 
 for filename in os.listdir(directory):
     f = os.path.join(directory, filename)
@@ -49,15 +77,7 @@ for filename in os.listdir(directory):
         print(csv_filename)
 
         time_intervals_to_csv(csv_filename, hop_length * 2)
+        instruments_to_mfcc(csv_filename, filepath)
 
         #print(mfccs)
         df.to_csv(filepath, index=False)
-
-#directory = '/Users/dankim/Documents/COSC410/FinalProj/instrument-classifier/labels/train_labels'
-#for filename in os.listdir(directory):
-#    print(filename)
-#    time_intervals_to_csv(filename, sr)
-
-        
-
-
