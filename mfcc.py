@@ -19,6 +19,7 @@ def instruments_to_mfcc(data_filename : str, mfcc_filename : str) :
     """
     data_df = pd.read_csv(data_filename)
     mfcc_df = pd.read_csv(mfcc_filename)
+    mfcc_df = mfcc_df.rename(columns={mfcc_df.columns[0]: "Coefficients"})
     mfcc_df['Instruments'] = None
     # Iterate over each row in data_df
     for index, row in data_df.iterrows():
@@ -35,7 +36,7 @@ def instruments_to_mfcc(data_filename : str, mfcc_filename : str) :
             
             # Add instrument group to corresponding row in 'Instruments' column of mfcc_df
             mfcc_df.loc[time_chunk, 'Instruments'] = instrument_group
-    
+    print(mfcc_df.head(10))
     mfcc_df.to_csv(mfcc_filename, index=False)
 
 for filename in os.listdir(directory):
