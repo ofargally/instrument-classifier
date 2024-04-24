@@ -195,6 +195,6 @@ def add_all_time_chunks(directory: str, timeInterval: int):
             time_intervals_to_csv(f, timeInterval)
             print(f'{f} Complete')
 
-directory = 'C:/Users/ataub/OneDrive/Desktop/CSProjects/instrument-classifier/labels/test_labels'
-hz_per_second = 44100
-add_all_time_chunks(directory, hz_per_second * 2)
+# directory = 'C:/Users/ataub/OneDrive/Desktop/CSProjects/instrument-classifier/labels/test_labels'
+# hz_per_second = 44100
+# add_all_time_chunks(directory, hz_per_second * 2)

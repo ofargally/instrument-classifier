@@ -45,14 +45,18 @@ for filename in os.listdir(directory):
         filepath = os.path.join(save_path, f'{file_name}_mfccs.csv')
 
         #print(filepath)
+        csv_filename = 'labels/train_labels/' + file_name + '.csv' # THIS IS HARDCODED! FIX IT LATER!
+        print(csv_filename)
+
+        time_intervals_to_csv(csv_filename, hop_length * 2)
 
         #print(mfccs)
         df.to_csv(filepath, index=False)
 
-directory = '/Users/dankim/Documents/COSC410/FinalProj/instrument-classifier/labels/train_labels'
-for filename in os.listdir(directory):
-    print(filename)
-    time_intervals_to_csv(filename, sr)
+#directory = '/Users/dankim/Documents/COSC410/FinalProj/instrument-classifier/labels/train_labels'
+#for filename in os.listdir(directory):
+#    print(filename)
+#    time_intervals_to_csv(filename, sr)
 
         
 
