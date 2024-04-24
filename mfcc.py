@@ -20,8 +20,8 @@ def instruments_to_mfcc(data_filename : str, mfcc_filename : str) :
     data_df = pd.read_csv(data_filename)
     mfcc_df = pd.read_csv(mfcc_filename)
     mfcc_df['Instruments'] = None
-    # Iterate over each row in csv_df
-    for index, row in csv_df.iterrows():
+    # Iterate over each row in data_df
+    for index, row in data_df.iterrows():
         instrument_group = row['Instrument Group']
         time_chunks_string = row['Time Chunks']
         
@@ -73,11 +73,13 @@ for filename in os.listdir(directory):
         filepath = os.path.join(save_path, f'{file_name}_mfccs.csv')
 
         #print(filepath)
-        csv_filename = 'labels/train_labels/' + file_name + '.csv' # THIS IS HARDCODED! FIX IT LATER!
-        print(csv_filename)
+        data_filename = 'labels/train_labels/' + file_name + '.csv' # THIS IS HARDCODED! FIX IT LATER!
+        mfcc_filename = 'mfccs/training/' + file_name + '_mfccs.csv' # ALSO HARDCODED
+        print(data_filename)
+        print(mfcc_filename)
 
-        time_intervals_to_csv(csv_filename, hop_length * 2)
-        instruments_to_mfcc(csv_filename, filepath)
+        time_intervals_to_csv(data_filename, hop_length * 2)
+        instruments_to_mfcc(data_filename, mfcc_filename)
 
         #print(mfccs)
         df.to_csv(filepath, index=False)
