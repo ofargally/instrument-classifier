@@ -4,6 +4,8 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import pandas as pd
+from label_preprocesser import time_intervals_to_csv
+
 
 directory = './wav_trial_split/'
 save_path = './mfccs/training'
@@ -14,12 +16,12 @@ for filename in os.listdir(directory):
 
         audiofile = f
 
-        signal, sr = librosa.load(audiofile)
-
+        signal, sr = librosa.load(audiofile)  #signal itself and the signal rate 
+        #print(sr)
         length = len(signal)/ sr #length of the audio file used to get the intervals 
-    
-
-        hop_length = int(sr * 0.0116) #hop length 11.6 ms
+        
+        #THESE LIKELY MAY NEED TO BE TUNED LATER!!!
+        hop_length = int(sr * 0.0116) #hop length 11.6 ms 
         step = hop_length / sr 
         n_fft = int(sr * .0464) #block size 46.4 ms 
         n_mels = 96 #number of mel bands
@@ -30,25 +32,28 @@ for filename in os.listdir(directory):
         mfccs = librosa.feature.mfcc(y = signal, n_mfcc = 13, sr = sr, hop_length = hop_length, n_mels = n_mels, fmin= f_min, fmax = f_max)
 
         intervals_s = np.arange(start=0, stop=length, step=step) #this is the time stamps of each interval made by mfcc in seconds 
-        print(mfccs.shape)
+        #print(mfccs.shape)
+        intervalLength = intervals_s[1] - intervals_s[0]
 
+        timeInterval = intervalLength * sr
+        
+
+        #print(filename)
+        #print(intervals_s)
         df = pd.DataFrame(mfccs[1])
         file_name = os.path.splitext(filename)[0]
         filepath = os.path.join(save_path, f'{file_name}_mfccs.csv')
 
+        #print(filepath)
+
         #print(mfccs)
         df.to_csv(filepath, index=False)
-#plotting the mfcc based on time. 
-#plt.figure(figsize=(25,10))
-#librosa.display.specshow(mfccs, x_axis = "time", sr = sr)
-#plt.colorbar(format = "%+2f")
-#plt.show()
+
+directory = '/Users/dankim/Documents/COSC410/FinalProj/instrument-classifier/labels/train_labels'
+for filename in os.listdir(directory):
+    print(filename)
+    time_intervals_to_csv(filename, sr)
+
+        
 
 
-#commented out for now since im not sure what the delta is. 
-#delta_mfccs = librosa.feature.delta(mfccs)
-
-#plt.figure(figsize=(25,10))
-#librosa.display.specshow(delta_mfccs, x_axis = "time", sr = sr)
-#plt.colorbar(format = "%+2f")
-#plt.show()
