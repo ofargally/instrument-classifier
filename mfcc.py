@@ -20,24 +20,25 @@ def instruments_to_mfcc(data_filename : str, mfcc_filename : str) :
     data_df = pd.read_csv(data_filename)
     mfcc_df = pd.read_csv(mfcc_filename)
     mfcc_df = mfcc_df.rename(columns={mfcc_df.columns[0]: "Coefficients"})
-    mfcc_df['Instruments'] = None
+    
+    # Initialize a column with sets to hold unique instruments per chunk
+    mfcc_df['Instruments'] = [set() for _ in range(len(mfcc_df))]
+    
     # Iterate over each row in data_df
-    for index, row in data_df.iterrows():
-        instrument_group = row['Instrument Group']
-        time_chunks_string = row['Time Chunks']
-        
+    for _, row in data_df.iterrows():
+        instrument_group = str(row['Instrument Group'])  # Convert instrument group to string
         # Convert the string representation of list to a Python list
-        time_chunks_list = json.loads(time_chunks_string)
+        time_chunks_list = json.loads(row['Time Chunks'].replace("'", "\""))
         
         # Iterate over each time chunk in the list
         for time_chunk in time_chunks_list:
-            # Convert time chunk to integer
-            time_chunk = int(time_chunk)
-            
-            # Add instrument group to corresponding row in 'Instruments' column of mfcc_df
-            mfcc_df.loc[time_chunk, 'Instruments'] = instrument_group
-    print(mfcc_df.head(10))
-    mfcc_df.to_csv(mfcc_filename, index=False)
+            # Subtract 1 from time_chunk since DataFrame rows are 0-indexed
+            mfcc_df.at[time_chunk - 1, 'Instruments'].add(instrument_group)
+    
+    # Convert sets to a semicolon-separated string
+    mfcc_df['Instruments'] = mfcc_df['Instruments'].apply(lambda instruments: ';'.join(instruments))
+    mfcc_df.to_csv('.\\mfcc_post_processing\\' + os.path.basename(mfcc_filename), index=False)
+    print(mfcc_df.head(50))
 
 for filename in os.listdir(directory):
     f = os.path.join(directory, filename)
@@ -74,8 +75,8 @@ for filename in os.listdir(directory):
         filepath = os.path.join(save_path, f'{file_name}_mfccs.csv')
 
         #print(filepath)
-        data_filename = 'labels/train_labels/' + file_name + '.csv' # THIS IS HARDCODED! FIX IT LATER!
-        mfcc_filename = 'mfccs/training/' + file_name + '_mfccs.csv' # ALSO HARDCODED
+        data_filename = './labels/train_labels/' + file_name + '.csv' # THIS IS HARDCODED! FIX IT LATER!
+        mfcc_filename = './mfccs/training/' + file_name + '_mfccs.csv' # ALSO HARDCODED
         print(data_filename)
         print(mfcc_filename)
 
