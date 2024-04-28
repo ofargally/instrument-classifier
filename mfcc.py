@@ -73,6 +73,9 @@ for filename in os.listdir(directory):
         df = pd.DataFrame(mfccs[1])
         file_name = os.path.splitext(filename)[0]
         filepath = os.path.join(save_path, f'{file_name}_mfccs.csv')
+        
+        #print(mfccs)
+        df.to_csv(filepath, index=False)
 
         #print(filepath)
         data_filename = './labels/train_labels/' + file_name + '.csv' # THIS IS HARDCODED! FIX IT LATER!
@@ -82,6 +85,3 @@ for filename in os.listdir(directory):
 
         time_intervals_to_csv(data_filename, hop_length * 2)
         instruments_to_mfcc(data_filename, mfcc_filename)
-
-        #print(mfccs)
-        df.to_csv(filepath, index=False)
