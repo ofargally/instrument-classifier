@@ -37,7 +37,7 @@ def instruments_to_mfcc(data_filename : str, mfcc_filename : str) :
     
     # Convert sets to a semicolon-separated string
     mfcc_df['Instruments'] = mfcc_df['Instruments'].apply(lambda instruments: ';'.join(instruments))
-    mfcc_df.to_csv('.\\mfcc_post_processing\\' + os.path.basename(mfcc_filename), index=False)
+    mfcc_df.to_csv('./mfcc_post_processing/' + os.path.basename(mfcc_filename), index=False)
     print(mfcc_df.head(50))
 
 for filename in os.listdir(directory):
