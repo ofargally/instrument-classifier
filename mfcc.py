@@ -37,8 +37,9 @@ def instruments_to_mfcc(data_filename : str, mfcc_filename : str) :
     
     # Convert sets to a semicolon-separated string
     mfcc_df['Instruments'] = mfcc_df['Instruments'].apply(lambda instruments: ';'.join(instruments))
+    mfcc_df['Instruments'] = mfcc_df['Instruments'].replace('', 0)
     mfcc_df.to_csv('./mfcc_post_processing/' + os.path.basename(mfcc_filename), index=False)
-    print(mfcc_df.head(50))
+    #print(mfcc_df.head(50))
 
 for filename in os.listdir(directory):
     f = os.path.join(directory, filename)
@@ -70,7 +71,7 @@ for filename in os.listdir(directory):
 
         #print(filename)
         #print(intervals_s)
-        df = pd.DataFrame(mfccs[1])
+        df = pd.DataFrame(mfccs.T)
         file_name = os.path.splitext(filename)[0]
         filepath = os.path.join(save_path, f'{file_name}_mfccs.csv')
         
@@ -80,8 +81,8 @@ for filename in os.listdir(directory):
         #print(filepath)
         data_filename = './labels/train_labels/' + file_name + '.csv' # THIS IS HARDCODED! FIX IT LATER!
         mfcc_filename = './mfccs/training/' + file_name + '_mfccs.csv' # ALSO HARDCODED
-        print(data_filename)
-        print(mfcc_filename)
+        #print(data_filename)
+        #print(mfcc_filename)
 
         time_intervals_to_csv(data_filename, hop_length * 2)
         instruments_to_mfcc(data_filename, mfcc_filename)
