@@ -10,7 +10,7 @@ from label_preprocesser import time_intervals_to_csv
 
 
 directory = './wav_trial_split/'
-save_path = './mfccs/training'
+save_path = './mfccs/testing'
 
 def instruments_to_mfcc(data_filename : str, mfcc_filename : str) :
     """
@@ -38,7 +38,7 @@ def instruments_to_mfcc(data_filename : str, mfcc_filename : str) :
     # Convert sets to a semicolon-separated string
     mfcc_df['Instruments'] = mfcc_df['Instruments'].apply(lambda instruments: ';'.join(instruments))
     mfcc_df['Instruments'] = mfcc_df['Instruments'].replace('', 0)
-    mfcc_df.to_csv('./mfcc_post_processing/' + os.path.basename(mfcc_filename), index=False)
+    mfcc_df.to_csv('./mfcc_post_processing_test/' + os.path.basename(mfcc_filename), index=False)
     #print(mfcc_df.head(50))
 
 for filename in os.listdir(directory):
@@ -79,8 +79,8 @@ for filename in os.listdir(directory):
         df.to_csv(filepath, index=False)
 
         #print(filepath)
-        data_filename = './labels/train_labels/' + file_name + '.csv' # THIS IS HARDCODED! FIX IT LATER!
-        mfcc_filename = './mfccs/training/' + file_name + '_mfccs.csv' # ALSO HARDCODED
+        data_filename = './labels/test_labels/' + file_name + '.csv' # THIS IS HARDCODED! FIX IT LATER!
+        mfcc_filename = './mfccs/testing/' + file_name + '_mfccs.csv' # ALSO HARDCODED
         #print(data_filename)
         #print(mfcc_filename)
 
