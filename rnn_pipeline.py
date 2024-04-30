@@ -24,7 +24,9 @@ pd_train = pd.concat(dataframes_train, ignore_index=True)
 
 # Process labels for multi-label classification
 def process_labels(value):
-    return list(map(int, value.split(';')))
+    value = str(value)
+    return [int(v) for v in value.split(';')]
+
 
 labels = pd_train['Instruments'].apply(process_labels)
 mlb = MultiLabelBinarizer()
@@ -86,6 +88,7 @@ def train_epoch(model, dataloader, criterion, optimizer, device):
     running_loss = 0.0
     for inputs, labels in dataloader:
         inputs, labels = inputs.to(device), labels.to(device)
+        inputs = inputs.unsqueeze(1)  # Add a sequence dimension
         optimizer.zero_grad()
         outputs = model(inputs)
         loss = criterion(outputs, labels)
@@ -101,10 +104,12 @@ def validate_epoch(model, dataloader, criterion, device):
     with torch.no_grad():
         for inputs, labels in dataloader:
             inputs, labels = inputs.to(device), labels.to(device)
+            inputs = inputs.unsqueeze(1)  # Add a sequence dimension
             outputs = model(inputs)
             loss = criterion(outputs, labels)
             running_loss += loss.item() * inputs.size(0)
     return running_loss / len(dataloader.dataset)
+
 
 # Training loop
 for epoch in range(30):
