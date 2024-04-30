@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from torch import nn, optim
 from torch.nn import TransformerEncoder, TransformerEncoderLayer
 import joblib  # For saving the scaler
-
+random.seed(666)
 # Load CSV files and concatenate into a DataFrame
 #directory_path_train = './mfcc_training_final' #for tturing
 directory_path_train = './mfcc_post_processing'
