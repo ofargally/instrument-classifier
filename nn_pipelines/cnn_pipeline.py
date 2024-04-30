@@ -2,6 +2,7 @@ import os
 import torch
 import glob
 import torch.nn as nn
+import torch.nn.functional as F
 import torch.optim as optim
 import random
 from sklearn.preprocessing import StandardScaler, MultiLabelBinarizer
@@ -37,9 +38,12 @@ def get_all_files(directory):
             files.append(f)
     return files
 # Assuming you have a list of CSV file paths
-directory_path_train = './mfcc_post_processing/train'
+directory_path_train = './mfcc_post_processing'
 file_pattern = "*.csv"
 csv_files_train = glob.glob(os.path.join(directory_path_train, file_pattern))
+sample_percentage = 1
+num_files_to_sample = int(len(csv_files_train) * (sample_percentage / 100.0))
+csv_files_train = random.sample(csv_files_train, num_files_to_sample)
 dataframes_train = []
 
 for file in csv_files_train:
@@ -65,6 +69,7 @@ X_train, X_val, y_train, y_val = train_test_split(features_scaled, labels_encode
 
 # Convert to tensors
 train_features = torch.tensor(X_train).float()
+print(train_features)
 train_labels = torch.tensor(y_train).float()
 val_features = torch.tensor(X_val).float()
 val_labels = torch.tensor(y_val).float()
@@ -92,7 +97,7 @@ class CNN(nn.Module): ##THIS NEEDS TO BE HEAVILY EDITTED IDK WHAT IM DOING ><
         self.pool = nn.MaxPool1d(2, stride=2)
         
         # Fully connected layers
-        self.fc1 = nn.Linear(9, 12)  
+        self.fc1 = nn.Linear(9, 3)  
     def forward(self, x):
         # Define the forward pass of your CNN
         x = self.conv1(x)
@@ -104,35 +109,27 @@ class CNN(nn.Module): ##THIS NEEDS TO BE HEAVILY EDITTED IDK WHAT IM DOING ><
         return x
 
 # Step 3: Training Loop
-model = CNN(input_size=train_features.shape[1], hidden_size=32, num_layers=2, num_classes=train_labels.shape[1]).to(torch.device("cpu")) 
+device = torch.device("cpu")
+model = CNN(input_size=train_features.shape[1], hidden_size=32, num_layers=2, num_classes=train_labels.shape[1]).to(device)
 criterion = nn.BCEWithLogitsLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.01)
 num_epochs = 10
 
-# Training loop
-for epoch in range(num_epochs):
+def train_epoch(model, dataloader, criterion, optimizer, device):
     model.train()
-    for inputs, labels in train_loader:
+    running_loss = 0.0
+    for inputs, labels in dataloader:
+        inputs, labels = inputs.to(device), labels.to(device)
         optimizer.zero_grad()
         outputs = model(inputs)
         loss = criterion(outputs, labels)
         loss.backward()
         optimizer.step()
+        running_loss += loss.item() * inputs.size(0)
+    return running_loss / len(dataloader.dataset)
 
-    # Validation loop
-    model.eval()
-    with torch.no_grad():
-        val_loss = 0.0
-        correct = 0
-        total = 0
-        for inputs, labels in val_loader:
-            outputs = model(inputs)
-            _, predicted = torch.max(outputs, 1)
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
-            val_loss += criterion(outputs, labels).item()
-
-    print(f"Epoch [{epoch+1}/{num_epochs}], "
-          f"Train Loss: {loss.item():.4f}, "
-          f"Val Loss: {val_loss / len(val_loader):.4f}, "
-          f"Val Accuracy: {(correct / total) * 100:.2f}%")
+for epoch in range(num_epochs):
+    print("epoch number: " + str(epoch))
+    train_loss = train_epoch(model, train_loader, criterion, optimizer, device)
+    val_loss = validate_epoch(model, val_loader, criterion, device)
+    print(f'Epoch {epoch+1}/{num_epochs} - Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}')
