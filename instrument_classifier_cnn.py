@@ -7,10 +7,23 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 # Step 1: Prepare the Data
+def tensorConvert(value):
+    if isinstance(value, str):
+        parts = value.split(';')
+        int_parts = [int(part) for part in parts]
+        tensor = torch.tensor(int_parts, dtype=torch.long)
+    else: 
+        tensor = torch.tensor([value], dtype=torch.long)
+    return tensor
+
 def load_data(filename):
     data = pd.read_csv(filename)
+    data['Instruments'] = data['Instruments'].apply(tensorConvert)
     features = torch.tensor(data.iloc[:, :-1].values, dtype=torch.float32)
-    labels = torch.tensor(data.iloc[:, -1].values, dtype=torch.long)
+    #print(data['Instruments'])
+    #print(type(data.iloc[:, -1].values[1])) #for some reason some of the instrument labels are strings while others are ints.
+    
+    labels = data['Instruments'] #torch.tensor(data.iloc[:, -1].values, dtype=torch.long)
     return features, labels
 
 def get_all_files(directory):
@@ -22,7 +35,10 @@ def get_all_files(directory):
     return files
 # Assuming you have a list of CSV file paths
 csv_files = get_all_files('./mfcc_post_processing')
+
 data = [load_data(filename) for filename in csv_files]
+
+print(data[1])
 
 # Pad or truncate sequences to a fixed length
 # You may need to adjust this based on your data
