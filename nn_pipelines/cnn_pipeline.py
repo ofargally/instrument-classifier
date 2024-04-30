@@ -15,7 +15,7 @@ directory_path_train = './mfcc_post_processing'
 random.seed(666)
 file_pattern = "*.csv"
 csv_files_train = glob.glob(os.path.join(directory_path_train, file_pattern))
-sample_percentage = 20
+sample_percentage = 1
 num_files_to_sample = int(len(csv_files_train) * (sample_percentage / 100.0))
 csv_files_train = random.sample(csv_files_train, num_files_to_sample)
 dataframes_train = []
@@ -31,8 +31,8 @@ def process_labels(value):
     return [int(v) for v in value.split(';')]
     
 labels = pd_train['Instruments'].apply(process_labels)
-
-mlb = MultiLabelBinarizer()
+all_labels = list(range(0,12)) 
+mlb = MultiLabelBinarizer(classes = all_labels)
 labels_encoded = mlb.fit_transform(labels)
 
 
@@ -78,7 +78,7 @@ class CNN(nn.Module): ##THIS NEEDS TO BE HEAVILY EDITTED IDK WHAT IM DOING ><
         self.pool = nn.MaxPool1d(2, stride=2)
         
         # Fully connected layers
-        self.fc1 = nn.Linear(9, 6)  
+        self.fc1 = nn.Linear(9, 12)  
     def forward(self, x):
         # Define the forward pass of your CNN
         x = self.conv1(x)
