@@ -33,11 +33,9 @@ def process_labels(value):
     return [int(v) for v in value.split(';')]
     
 labels = pd_train['Instruments'].apply(process_labels)
-print(labels[:30])
 
 mlb = MultiLabelBinarizer()
 labels_encoded = mlb.fit_transform(labels)
-print(labels_encoded[:30])
 
 # Prepare features
 features = pd_train.drop('Instruments', axis=1)
