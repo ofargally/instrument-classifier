@@ -24,7 +24,6 @@ for file in csv_files_train:
     df = pd.read_csv(file)
     dataframes_train.append(df)
 pd_train = pd.concat(dataframes_train, ignore_index=True)
-print(csv_files_train)
 
 
 
@@ -129,5 +128,5 @@ for epoch in range(num_epochs):
     val_loss = validate_epoch(model, val_loader, criterion, device)
     print(f'Epoch {epoch+1}/{num_epochs} - Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}')
 
-torch.save(model.state_dict(), './cnn_v1_state.pth')
-torch.save(model, './cnn_v1.pth')
+torch.save(model.state_dict(), './cnn_v2_state.pth')
+torch.save(model, './cnn_v2.pth')
