@@ -7,7 +7,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 # Step 1: Prepare the Data
-def tensorConvert(value):
+def tensorConvert(value): #necessary since some of the labels have semicolons and some are ints or strings...
     if isinstance(value, str):
         parts = value.split(';')
         int_parts = [int(part) for part in parts]
@@ -38,32 +38,45 @@ csv_files = get_all_files('./mfcc_post_processing')
 
 data = [load_data(filename) for filename in csv_files]
 
-print(data[1])
+#print(data[1])
 
 # Pad or truncate sequences to a fixed length
 # You may need to adjust this based on your data
 # For example, you can use torch.nn.utils.rnn.pad_sequence
 
 # Step 2: Define the CNN Model
-class CNN(nn.Module):
+class CNN(nn.Module): ##THIS NEEDS TO BE HEAVILY EDITTED IDK WHAT IM DOING >< 
     def __init__(self):
         super(CNN, self).__init__()
         # Define your CNN architecture here
-
+        self.conv1 = nn.Conv1d(1, 32, kernel_size=3, stride=1)
+        self.relu = nn.ReLU()
+        self.pool = nn.MaxPool1d(kernel_size=2)
+        self.conv2 = nn.Conv1d(32, 64, kernel_size=3, stride=1)
+        self.fc1 = nn.Linear(64, 128)
     def forward(self, x):
         # Define the forward pass of your CNN
+        x = self.conv1(x)
+        x = self.relu(x)
+        x = self.pool(x)
+        x = self.conv2(x)
+        x = self.relu(x)
+        x = self.pool(x)
+        x = x.view(x.size(0), -1)
+        x = self.fc1(x)
+        x = self.relu(x)
         return x
 
 # Step 3: Training Loop
-model = CNN()
+model = CNN().to(torch.device("cpu")) 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.01)
-num_epochs = 50
+num_epochs = 10
 
 # Split data into train and validation sets
 train_data, val_data = train_test_split(data, test_size=0.2)
 
-# Assuming data is already padded or truncated and converted into tensors
+##THIS NEEDS TO BE LOOKED AT SINCE THE TRAIN DATA IS NOT ALL THE SAME SIZE
 train_loader = DataLoader(train_data, batch_size=32, shuffle=True)
 val_loader = DataLoader(val_data, batch_size=32, shuffle=False)
 
