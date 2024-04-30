@@ -25,19 +25,16 @@ for file in csv_files_train:
     dataframes_train.append(df)
 pd_train = pd.concat(dataframes_train, ignore_index=True)
 
-
-
 # Process labels for multi-label classification
 def process_labels(value):
     value = str(value)
     return [int(v) for v in value.split(';')]
     
 labels = pd_train['Instruments'].apply(process_labels)
-print(labels[:30])
 
 mlb = MultiLabelBinarizer()
 labels_encoded = mlb.fit_transform(labels)
-print(labels_encoded[:30])
+
 
 # Prepare features
 features = pd_train.drop('Instruments', axis=1)
@@ -94,6 +91,9 @@ class CNN(nn.Module): ##THIS NEEDS TO BE HEAVILY EDITTED IDK WHAT IM DOING ><
 
 # Step 3: Training Loop
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+input_size = train_features.shape[1]
+num_classes = train_labels.shape[1]
+print(input_size, num_classes)
 model = CNN(input_size=train_features.shape[1], hidden_size=32, num_layers=2, num_classes=train_labels.shape[1]).to(device)
 criterion = nn.BCEWithLogitsLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -130,5 +130,5 @@ for epoch in range(num_epochs):
     val_loss = validate_epoch(model, val_loader, criterion, device)
     print(f'Epoch {epoch+1}/{num_epochs} - Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}')
 
-torch.save(model.state_dict(), './cnn_v2_state.pth')
-torch.save(model, './cnn_v2.pth')
+torch.save(model.state_dict(), './cnn_v1_state.pth')
+torch.save(model, './cnn_v1.pth')
