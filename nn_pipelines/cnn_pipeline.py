@@ -38,15 +38,13 @@ def get_all_files(directory):
             files.append(f)
     return files
 # Assuming you have a list of CSV file paths
-directory_path_train = './mfcc_post_processing'
+directory_path_train = './mfcc_post_processing/train'
 file_pattern = "*.csv"
 csv_files_train = glob.glob(os.path.join(directory_path_train, file_pattern))
-sample_percentage = 1
-num_files_to_sample = int(len(csv_files_train) * (sample_percentage / 100.0))
-csv_files_train = random.sample(csv_files_train, num_files_to_sample)
 dataframes_train = []
 
 for file in csv_files_train:
+    print(file)
     df = pd.read_csv(file)
     dataframes_train.append(df)
 pd_train = pd.concat(dataframes_train, ignore_index=True)
@@ -66,11 +64,13 @@ scaler = StandardScaler()
 features_scaled = scaler.fit_transform(features)
 
 X_train, X_val, y_train, y_val = train_test_split(features_scaled, labels_encoded, test_size=0.2, random_state=42)
+print(X_train)
 
 # Convert to tensors
 train_features = torch.tensor(X_train).float()
-print(train_features)
 train_labels = torch.tensor(y_train).float()
+print(y_train)
+print(train_labels)
 val_features = torch.tensor(X_val).float()
 val_labels = torch.tensor(y_val).float()
 
@@ -97,7 +97,7 @@ class CNN(nn.Module): ##THIS NEEDS TO BE HEAVILY EDITTED IDK WHAT IM DOING ><
         self.pool = nn.MaxPool1d(2, stride=2)
         
         # Fully connected layers
-        self.fc1 = nn.Linear(9, 3)  
+        self.fc1 = nn.Linear(9, 12)  
     def forward(self, x):
         # Define the forward pass of your CNN
         x = self.conv1(x)
