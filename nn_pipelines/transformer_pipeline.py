@@ -13,7 +13,8 @@ from torch.nn import TransformerEncoder, TransformerEncoderLayer
 import joblib  # For saving the scaler
 
 # Load CSV files and concatenate into a DataFrame
-directory_path_train = './mfcc_training_final'
+#directory_path_train = './mfcc_training_final' #for tturing
+directory_path_train = './mfcc_post_processing'
 file_pattern = "*.csv"
 csv_files_train = glob.glob(os.path.join(directory_path_train, file_pattern))
 sample_percentage = 1
