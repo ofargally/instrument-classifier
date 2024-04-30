@@ -21,7 +21,6 @@ def tensorConvert(value): #necessary since some of the labels have semicolons an
 
 def load_data(filename):
     data = pd.read_csv(filename)
-    print(data['Instruments'].head(5))
     data['Instruments'] = data['Instruments'].apply(tensorConvert)
     features = torch.tensor(data.iloc[:, :-1].values, dtype=torch.float32)
     #print(data['Instruments'])
