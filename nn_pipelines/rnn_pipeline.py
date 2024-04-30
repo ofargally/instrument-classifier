@@ -8,50 +8,49 @@ from sklearn.preprocessing import StandardScaler, MultiLabelBinarizer
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, TensorDataset
 from torch import nn, optim
+from torch.nn.utils.rnn import pad_sequence
 
-# Load CSV files and concatenate into a DataFrame
+# Load CSV files and process each as a sequence
 directory_path_train = './mfcc_training_final'
 file_pattern = "*.csv"
 csv_files_train = glob.glob(os.path.join(directory_path_train, file_pattern))
-sample_percentage = 1
+sample_percentage = 100  # Adjust as necessary
 num_files_to_sample = int(len(csv_files_train) * (sample_percentage / 100.0))
 csv_files_train = random.sample(csv_files_train, num_files_to_sample)
-dataframes_train = []
+
+sequences = []
+labels_list = []
+
 for file in csv_files_train:
     df = pd.read_csv(file)
-    dataframes_train.append(df)
-pd_train = pd.concat(dataframes_train, ignore_index=True)
+    features = df.drop('Instruments', axis=1)
+    scaler = StandardScaler()
+    scaled_features = scaler.fit_transform(features)
+    sequences.append(torch.tensor(scaled_features).float())
+    
+    label = df['Instruments'].iloc[0]  # Assuming label is the same for the whole file and only stored in the first row
+    labels_list.append(label)
 
 # Process labels for multi-label classification
-def process_labels(value):
-    value = str(value)
-    return [int(v) for v in value.split(';')]
-
-
-labels = pd_train['Instruments'].apply(process_labels)
 mlb = MultiLabelBinarizer()
-labels_encoded = mlb.fit_transform(labels)
-
-# Prepare features
-features = pd_train.drop('Instruments', axis=1)
-scaler = StandardScaler()
-features_scaled = scaler.fit_transform(features)
+labels_encoded = mlb.fit_transform(labels_list)
+labels_encoded = [torch.tensor(label).float() for label in labels_encoded]
 
 # Split the data
-X_train, X_val, y_train, y_val = train_test_split(features_scaled, labels_encoded, test_size=0.2, random_state=42)
+X_train, X_val, y_train, y_val = train_test_split(sequences, labels_encoded, test_size=0.2, random_state=42)
 
-# Convert to tensors
-train_features = torch.tensor(X_train).float()
-train_labels = torch.tensor(y_train).float()
-val_features = torch.tensor(X_val).float()
-val_labels = torch.tensor(y_val).float()
+# Pad sequences and create dataloaders
+def collate_fn(batch):
+    sequences, labels = zip(*batch)
+    sequences_padded = pad_sequence(sequences, batch_first=True, padding_value=0)
+    labels = torch.stack(labels)
+    return sequences_padded, labels
 
-# DataLoader setup
-train_dataset = TensorDataset(train_features, train_labels)
-val_dataset = TensorDataset(val_features, val_labels)
-batch_size = 32
-train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+train_dataset = list(zip(X_train, y_train))
+val_dataset = list(zip(X_val, y_val))
+
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, collate_fn=collate_fn)
+val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False, collate_fn=collate_fn)
 
 # RNN Model
 class RNNInstrumentClassifier(nn.Module):
@@ -112,7 +111,7 @@ def validate_epoch(model, dataloader, criterion, device):
 
 
 # Training loop
-for epoch in range(30):
+for epoch in range(10):
     train_loss = train_epoch(model, train_loader, criterion, optimizer, device)
     val_loss = validate_epoch(model, val_loader, criterion, device)
     print(f'Epoch {epoch+1}/30 - Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}')
