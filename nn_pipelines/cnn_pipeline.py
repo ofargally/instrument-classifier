@@ -21,6 +21,7 @@ def tensorConvert(value): #necessary since some of the labels have semicolons an
 
 def load_data(filename):
     data = pd.read_csv(filename)
+    print(data['Instruments'].head(5))
     data['Instruments'] = data['Instruments'].apply(tensorConvert)
     features = torch.tensor(data.iloc[:, :-1].values, dtype=torch.float32)
     #print(data['Instruments'])
@@ -37,12 +38,9 @@ def get_all_files(directory):
             files.append(f)
     return files
 # Assuming you have a list of CSV file paths
-directory_path_train = './mfcc_post_processing'
+directory_path_train = './mfcc_post_processing/train'
 file_pattern = "*.csv"
 csv_files_train = glob.glob(os.path.join(directory_path_train, file_pattern))
-sample_percentage = 1
-num_files_to_sample = int(len(csv_files_train) * (sample_percentage / 100.0))
-csv_files_train = random.sample(csv_files_train, num_files_to_sample)
 dataframes_train = []
 
 for file in csv_files_train:
@@ -95,7 +93,7 @@ class CNN(nn.Module): ##THIS NEEDS TO BE HEAVILY EDITTED IDK WHAT IM DOING ><
         self.pool = nn.MaxPool1d(2, stride=2)
         
         # Fully connected layers
-        self.fc1 = nn.Linear(9, 5)  
+        self.fc1 = nn.Linear(9, 12)  
     def forward(self, x):
         # Define the forward pass of your CNN
         x = self.conv1(x)
@@ -107,7 +105,7 @@ class CNN(nn.Module): ##THIS NEEDS TO BE HEAVILY EDITTED IDK WHAT IM DOING ><
         return x
 
 # Step 3: Training Loop
-model = CNN(input_size=train_features.shape[1], hidden_size=100, num_layers=2, num_classes=train_labels.shape[1]).to(torch.device("cpu")) 
+model = CNN(input_size=train_features.shape[1], hidden_size=32, num_layers=2, num_classes=train_labels.shape[1]).to(torch.device("cpu")) 
 criterion = nn.BCEWithLogitsLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.01)
 num_epochs = 10
