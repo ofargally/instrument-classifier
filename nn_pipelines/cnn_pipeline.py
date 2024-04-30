@@ -10,44 +10,23 @@ from torch.utils.data import DataLoader, TensorDataset
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-# Step 1: Prepare the Data
-def tensorConvert(value): #necessary since some of the labels have semicolons and some are ints or strings...
-    if isinstance(value, str):
-        parts = value.split(';')
-        int_parts = [int(part) for part in parts]
-        tensor = torch.tensor(int_parts, dtype=torch.long)
-    else: 
-        tensor = torch.tensor([value], dtype=torch.long)
-    return tensor
-
-def load_data(filename):
-    data = pd.read_csv(filename)
-    data['Instruments'] = data['Instruments'].apply(tensorConvert)
-    features = torch.tensor(data.iloc[:, :-1].values, dtype=torch.float32)
-    #print(data['Instruments'])
-    #print(type(data.iloc[:, -1].values[1])) #for some reason some of the instrument labels are strings while others are ints.
-    print(filename)
-    labels = data['Instruments'] #torch.tensor(data.iloc[:, -1].values, dtype=torch.long)
-    return features, labels
-
-def get_all_files(directory):
-    files = []
-    for filename in os.listdir(directory):
-        f = os.path.join(directory, filename)
-        if os.path.isfile(f):
-            files.append(f)
-    return files
 # Assuming you have a list of CSV file paths
-directory_path_train = './mfcc_post_processing/train'
+directory_path_train = './mfcc_post_processing'
+random.seed(666)
 file_pattern = "*.csv"
 csv_files_train = glob.glob(os.path.join(directory_path_train, file_pattern))
+sample_percentage = 20
+num_files_to_sample = int(len(csv_files_train) * (sample_percentage / 100.0))
+csv_files_train = random.sample(csv_files_train, num_files_to_sample)
 dataframes_train = []
 
 for file in csv_files_train:
-    print(file)
     df = pd.read_csv(file)
     dataframes_train.append(df)
 pd_train = pd.concat(dataframes_train, ignore_index=True)
+print(csv_files_train)
+
+
 
 # Process labels for multi-label classification
 def process_labels(value):
@@ -55,6 +34,7 @@ def process_labels(value):
     return [int(v) for v in value.split(';')]
     
 labels = pd_train['Instruments'].apply(process_labels)
+
 mlb = MultiLabelBinarizer()
 labels_encoded = mlb.fit_transform(labels)
 
@@ -63,24 +43,27 @@ features = pd_train.drop('Instruments', axis=1)
 scaler = StandardScaler()
 features_scaled = scaler.fit_transform(features)
 
-X_train, X_val, y_train, y_val = train_test_split(features_scaled, labels_encoded, test_size=0.2, random_state=42)
-print(X_train)
+X_train, X_val, y_train, y_val = train_test_split(features_scaled, labels_encoded, test_size=.2, random_state=42)
 
 # Convert to tensors
 train_features = torch.tensor(X_train).float()
 train_labels = torch.tensor(y_train).float()
-print(y_train)
-print(train_labels)
 val_features = torch.tensor(X_val).float()
 val_labels = torch.tensor(y_val).float()
 
 train_data = TensorDataset(train_features, train_labels)
+for idx, (inputs, labels) in enumerate(train_data):
+    print(f"Sample {idx}:")
+    print(f"  Inputs: {inputs}")
+    print(f"  Labels: {labels}")
+    # If you want to print a limited number of samples (e.g., the first 5), you can use an if statement
+    if idx >= 5:  # Limit to printing the first 5 samples for brevity
+        break
+
 val_data = TensorDataset(val_features, val_labels)
 batch_size = 32
-train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
-val_loader = DataLoader(val_data, batch_size=batch_size, shuffle=False)
-
-#print(data[1])
+train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True, drop_last = True)
+val_loader = DataLoader(val_data, batch_size=batch_size, shuffle=False, drop_last = True)
 
 # Pad or truncate sequences to a fixed length
 # You may need to adjust this based on your data
@@ -97,22 +80,22 @@ class CNN(nn.Module): ##THIS NEEDS TO BE HEAVILY EDITTED IDK WHAT IM DOING ><
         self.pool = nn.MaxPool1d(2, stride=2)
         
         # Fully connected layers
-        self.fc1 = nn.Linear(9, 12)  
+        self.fc1 = nn.Linear(9, 6)  
     def forward(self, x):
         # Define the forward pass of your CNN
         x = self.conv1(x)
         x = self.relu(x)
         x = self.conv2(x)
         x = self.relu(x)
+        x = torch.flatten(x,1)
         x = self.fc1(x)
-        x = self.relu(x)
-        return x
+        return torch.sigmoid(x)
 
 # Step 3: Training Loop
-device = torch.device("cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = CNN(input_size=train_features.shape[1], hidden_size=32, num_layers=2, num_classes=train_labels.shape[1]).to(device)
 criterion = nn.BCEWithLogitsLoss()
-optimizer = optim.SGD(model.parameters(), lr=0.01)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
 num_epochs = 10
 
 def train_epoch(model, dataloader, criterion, optimizer, device):
@@ -128,8 +111,23 @@ def train_epoch(model, dataloader, criterion, optimizer, device):
         running_loss += loss.item() * inputs.size(0)
     return running_loss / len(dataloader.dataset)
 
+def validate_epoch(model, dataloader, criterion, device):
+    model.eval()
+    running_loss = 0.0
+    with torch.no_grad():
+        for inputs, labels in dataloader:
+            inputs, labels = inputs.to(device), labels.to(device)
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
+            running_loss += loss.item() * inputs.size(0)
+    return running_loss / len(dataloader.dataset)
+
+
 for epoch in range(num_epochs):
     print("epoch number: " + str(epoch))
     train_loss = train_epoch(model, train_loader, criterion, optimizer, device)
     val_loss = validate_epoch(model, val_loader, criterion, device)
     print(f'Epoch {epoch+1}/{num_epochs} - Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}')
+
+torch.save(model.state_dict(), './cnn_v1_state.pth')
+torch.save(model, './cnn_v1.pth')
