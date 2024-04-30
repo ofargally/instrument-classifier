@@ -1,119 +1,80 @@
+import os
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-from torchvision import datasets, transforms
-from torch.optim.lr_scheduler import StepLR
-
-import os
+from torch.utils.data import DataLoader, TensorDataset
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
-# Path to the directory containing CSV files
-directory = './mfcc_post_processing'
+# Step 1: Prepare the Data
+def load_data(filename):
+    data = pd.read_csv(filename)
+    features = torch.tensor(data.iloc[:, :-1].values, dtype=torch.float32)
+    labels = torch.tensor(data.iloc[:, -1].values, dtype=torch.long)
+    return features, labels
 
-# Function to get sequence length from a CSV file
-def get_sequence_length(filename):
-    df = pd.read_csv(filename)
-    return len(df)
-
-# Iterate through each CSV file in the directory
-def get_max_sequence_length(directory):
-    max_seq_len = 0
+def get_all_files(directory):
+    files = []
     for filename in os.listdir(directory):
-        if filename.endswith(".csv"):
-            file_path = os.path.join(directory, filename)
-            seq_len = get_sequence_length(file_path)
-            max_seq_len = max(max_seq_len, seq_len)
-    return max_seq_len
+        f = os.path.join(directory, filename)
+        if os.path.isfile(f):
+            files.append(f)
+    return files
+# Assuming you have a list of CSV file paths
+csv_files = get_all_files('./mfcc_post_processing')
+data = [load_data(filename) for filename in csv_files]
 
-import os
-import pandas as pd
-import numpy as np
-from sklearn.preprocessing import MultiLabelBinarizer, StandardScaler
-from torch.utils.data import DataLoader, Dataset, TensorDataset
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
+# Pad or truncate sequences to a fixed length
+# You may need to adjust this based on your data
+# For example, you can use torch.nn.utils.rnn.pad_sequence
 
-# Dataset Class
-class MFCCDataset(Dataset):
-    def __init__(self, directory):
-        self.data = []
-        self.labels = []
-        self.mlb = MultiLabelBinarizer()
-        self.scaler = StandardScaler()
-
-        for filename in os.listdir(directory):
-            df = pd.read_csv(os.path.join(directory, filename), names=['Coefficients', 'Instruments'], skiprows=1)
-            df = df.dropna()  # Drop rows with missing labels
-            if not df.empty:
-                instruments = df['Instruments'].apply(lambda x: tuple(map(int, x.split(';')))).tolist()
-                coefficients = df['Coefficients'].tolist()
-               
-                # Normalize MFCC coefficients
-                coefficients = np.array(coefficients).reshape(-1, 1)
-                coefficients = self.scaler.fit_transform(coefficients).flatten()
-
-                self.data.append(coefficients)
-                self.labels.append(instruments)
-       
-        # Fit MultiLabelBinarizer to all available labels
-        self.labels = self.mlb.fit_transform(self.labels)
-
-    def __len__(self):
-        return len(self.data)
-
-    def __getitem__(self, idx):
-        # Pad or truncate the sequence to a fixed size, e.g., 500
-        max_length = 500
-        feature = np.zeros(max_length)
-        length = min(max_length, len(self.data[idx]))
-        feature[:length] = self.data[idx][:length]
-        return torch.tensor(feature, dtype=torch.float32).unsqueeze(0), torch.tensor(self.labels[idx], dtype=torch.float32)
-
-# CNN Model Definition
+# Step 2: Define the CNN Model
 class CNN(nn.Module):
-    def __init__(self, num_classes):
+    def __init__(self):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv1d(1, 16, kernel_size=3, padding=1)
-        self.conv2 = nn.Conv1d(16, 32, kernel_size=3, padding=1)
-        self.pool = nn.MaxPool1d(2)
-        self.fc1 = nn.Linear(32 * 250, 128)  # Adjust size according to your padding/stride
-        self.fc2 = nn.Linear(128, num_classes)
+        # Define your CNN architecture here
 
     def forward(self, x):
-        x = F.relu(self.pool(self.conv1(x)))
-        x = F.relu(self.pool(self.conv2(x)))
-        x = x.view(x.size(0), -1)
-        x = F.relu(self.fc1(x))
-        x = self.fc2(x)
+        # Define the forward pass of your CNN
         return x
 
-# Setup
-directory = '/path/to/mfcc_post_processing'
-dataset = MFCCDataset(directory)
-dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
+# Step 3: Training Loop
+model = CNN()
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.SGD(model.parameters(), lr=0.01)
+num_epochs = 50
 
-# Model
-num_classes = len(dataset.mlb.classes_)
-model = CNN(num_classes)
+# Split data into train and validation sets
+train_data, val_data = train_test_split(data, test_size=0.2)
 
-# Loss and Optimizer
-criterion = nn.BCEWithLogitsLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+# Assuming data is already padded or truncated and converted into tensors
+train_loader = DataLoader(train_data, batch_size=32, shuffle=True)
+val_loader = DataLoader(val_data, batch_size=32, shuffle=False)
 
-# Training Loop
-def train_model():
+# Training loop
+for epoch in range(num_epochs):
     model.train()
-    for data, labels in dataloader:
+    for inputs, labels in train_loader:
         optimizer.zero_grad()
-        outputs = model(data)
+        outputs = model(inputs)
         loss = criterion(outputs, labels)
         loss.backward()
         optimizer.step()
 
-    print('Training complete')
+    # Validation loop
+    model.eval()
+    with torch.no_grad():
+        val_loss = 0.0
+        correct = 0
+        total = 0
+        for inputs, labels in val_loader:
+            outputs = model(inputs)
+            _, predicted = torch.max(outputs, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+            val_loss += criterion(outputs, labels).item()
 
-train_model()
+    print(f"Epoch [{epoch+1}/{num_epochs}], "
+          f"Train Loss: {loss.item():.4f}, "
+          f"Val Loss: {val_loss / len(val_loader):.4f}, "
+          f"Val Accuracy: {(correct / total) * 100:.2f}%")
