@@ -15,7 +15,7 @@ directory_path_train = './mfcc_post_processing'
 random.seed(666)
 file_pattern = "*.csv"
 csv_files_train = glob.glob(os.path.join(directory_path_train, file_pattern))
-sample_percentage = 1
+sample_percentage = 50
 num_files_to_sample = int(len(csv_files_train) * (sample_percentage / 100.0))
 csv_files_train = random.sample(csv_files_train, num_files_to_sample)
 dataframes_train = []
@@ -75,16 +75,20 @@ class CNN(nn.Module): ##THIS NEEDS TO BE HEAVILY EDITTED IDK WHAT IM DOING ><
         self.conv1 = nn.Conv1d(32, 64, kernel_size=3, stride=1)
         self.relu = nn.ReLU()
         self.conv2 = nn.Conv1d(64, hidden_size, kernel_size=3, stride=1)
-        self.pool = nn.MaxPool1d(2, stride=2)
+        self.pool = nn.MaxPool1d(2, stride=1)
         
         # Fully connected layers
-        self.fc1 = nn.Linear(9, 12)  
+        self.fc1 = nn.Linear(7, 12)  
     def forward(self, x):
         # Define the forward pass of your CNN
         x = self.conv1(x)
         x = self.relu(x)
+        x = self.pool(x)
         x = self.conv2(x)
         x = self.relu(x)
+        #print(x.shape)
+        x = self.pool(x)
+        #print(x.shape)
         x = torch.flatten(x,1)
         x = self.fc1(x)
         return torch.sigmoid(x)
@@ -94,10 +98,10 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 input_size = train_features.shape[1]
 num_classes = train_labels.shape[1]
 print(input_size, num_classes)
-model = CNN(input_size=train_features.shape[1], hidden_size=32, num_layers=2, num_classes=train_labels.shape[1]).to(device)
+model = CNN(input_size=train_features.shape[1], hidden_size=32, num_layers=5, num_classes=train_labels.shape[1]).to(device)
 criterion = nn.BCEWithLogitsLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-num_epochs = 10
+num_epochs = 5
 
 def train_epoch(model, dataloader, criterion, optimizer, device):
     model.train()

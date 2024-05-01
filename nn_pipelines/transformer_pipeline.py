@@ -22,7 +22,7 @@ def process_labels(value):
 directory_path_train = './mfcc_post_processing'
 file_pattern = "*.csv"
 csv_files_train = glob.glob(os.path.join(directory_path_train, file_pattern))
-sample_percentage = 50
+sample_percentage = 100
 num_files_to_sample = int(len(csv_files_train) * (sample_percentage / 100.0))
 csv_files_train = random.sample(csv_files_train, num_files_to_sample)
 dataframes_train = []
@@ -36,7 +36,8 @@ features = pd_train.drop('Instruments', axis=1)
 labels = pd_train['Instruments'].apply(process_labels)
 
 # Apply MultiLabelBinarizer
-mlb = MultiLabelBinarizer()
+all_labels = list(range(0,12)) 
+mlb = MultiLabelBinarizer(classes = all_labels)
 labels = mlb.fit_transform(labels)
 print("Labels shape after MultiLabelBinarizer:", labels.shape)
 
@@ -67,14 +68,20 @@ print("passed the train validation pytorch tensor creation")
 # DataLoaders
 train_dataset = TensorDataset(train_features, train_labels)
 val_dataset = TensorDataset(val_features, val_labels)
-batch_size = 32
+batch_size = 64  # Updated batch size from the finetuning results
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 print("passed the dataloader stuff")
 # Define the model
 class InstrumentClassifier(nn.Module):
-    def __init__(self, num_features, num_classes, dim_model=64, nhead=4, num_layers=2, dropout=0.1):
+    def __init__(self, num_features, num_classes):
         super(InstrumentClassifier, self).__init__()
+        # Hyperparameters from the finetuning results
+        dim_model = 64  # Dimension of the model
+        nhead = 2       # Number of heads in multiheadattention
+        num_layers = 3  # Number of transformer layers
+        dropout = 0.20573244238175206  # Dropout rate
+
         self.embedding = nn.Linear(num_features, dim_model)
         encoder_layers = TransformerEncoderLayer(d_model=dim_model, nhead=nhead, dropout=dropout, batch_first=True)
         self.transformer_encoder = TransformerEncoder(encoder_layers, num_layers)
@@ -91,7 +98,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = InstrumentClassifier(num_features=train_features.shape[1], num_classes=train_labels.shape[1]).to(device)
 print("passed the model instance creation")
 criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+lr = 5.079461326345639e-05  # Learning rate from the finetuning results
+optimizer = optim.Adam(model.parameters(), lr=lr)
 print("passed the optimizier")
 def train_epoch(model, dataloader, criterion, optimizer, device):
     model.train()
@@ -118,7 +126,7 @@ def validate_epoch(model, dataloader, criterion, device):
     return running_loss / len(dataloader.dataset)
 
 # Training loop
-num_epochs = 10
+num_epochs = 5
 for epoch in range(num_epochs):
     print("epoch number: " + str(epoch))
     train_loss = train_epoch(model, train_loader, criterion, optimizer, device)

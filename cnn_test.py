@@ -54,23 +54,27 @@ class CNN(nn.Module): ##THIS NEEDS TO BE HEAVILY EDITTED IDK WHAT IM DOING ><
         self.conv1 = nn.Conv1d(32, 64, kernel_size=3, stride=1)
         self.relu = nn.ReLU()
         self.conv2 = nn.Conv1d(64, hidden_size, kernel_size=3, stride=1)
-        self.pool = nn.MaxPool1d(2, stride=2)
+        self.pool = nn.MaxPool1d(2, stride=1)
         
         # Fully connected layers
-        self.fc1 = nn.Linear(9, 12)  
+        self.fc1 = nn.Linear(7, 12)  
     def forward(self, x):
         # Define the forward pass of your CNN
         x = self.conv1(x)
         x = self.relu(x)
+        x = self.pool(x)
         x = self.conv2(x)
         x = self.relu(x)
+        print(x.shape)
+        x = self.pool(x)
+        print(x.shape)
         x = torch.flatten(x,1)
         x = self.fc1(x)
         return torch.sigmoid(x)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = CNN(input_size = 13, hidden_size=32, num_layers=2, num_classes=3).to(device)
-model_path = "cnn_v1_state.pth"  # Provide the path to your .pth file
+model_path = "./cnn_v1_state.pth"  # Provide the path to your .pth file
 model.load_state_dict(torch.load(model_path))
 model.eval()
 

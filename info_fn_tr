@@ -1,0 +1,2 @@
+[I 2024-04-30 17:04:43,069] Trial 0 finished with value: 0.5642476186081953 and parameters: {'dim_model': 64, 'nhead': 2, 'num_layers': 4, 'dropout': 0.14827579350105854, 'lr': 1.1403216287509518e-05, 
+'batch_size': 16}. Best is trial 0 with value: 0.5642476186081953.
