@@ -78,7 +78,7 @@ class InstrumentClassifier(nn.Module):
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = InstrumentClassifier(num_features=test_features.shape[1], num_classes=len(all_labels)).to(device)
-model_path = "transformer_v1_state.pth"  # Update with the actual model file path
+model_path = "./model_dump/100percent_trans/transformer_v1_state.pth"  # Update with the actual model file path
 model.load_state_dict(torch.load(model_path, map_location=device))
 model.eval()
 

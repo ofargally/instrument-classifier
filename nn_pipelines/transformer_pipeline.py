@@ -96,8 +96,8 @@ class InstrumentClassifier(nn.Module):
 # Initialize and train the model
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = InstrumentClassifier(num_features=train_features.shape[1], num_classes=train_labels.shape[1]).to(device)
-model_path = "./model_dump/100percent_trans/transformer_v1_state.pth"  # Provide the path to your .pth file
-model.load_state_dict(torch.load(model_path))
+#model_path = "./model_dump/100percent_trans/transformer_v1_state.pth"  # Provide the path to your .pth file
+#model.load_state_dict(torch.load(model_path))
 print("passed the model instance creation")
 criterion = nn.BCELoss()
 lr = 5.4983460602996186e-05  # Learning rate from the finetuning results
