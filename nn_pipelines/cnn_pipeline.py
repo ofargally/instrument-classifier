@@ -99,9 +99,11 @@ input_size = train_features.shape[1]
 num_classes = train_labels.shape[1]
 print(input_size, num_classes)
 model = CNN(input_size=train_features.shape[1], hidden_size=32, num_layers=5, num_classes=train_labels.shape[1]).to(device)
-criterion = nn.BCEWithLogitsLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
-num_epochs = 5
+model_path = "./cnn_v1_state.pth"  # Provide the path to your .pth file
+model.load_state_dict(torch.load(model_path))
+criterion = nn.BCELoss()
+optimizer = optim.SGD(model.parameters(), lr=0.001)
+num_epochs = 10
 
 def train_epoch(model, dataloader, criterion, optimizer, device):
     model.train()
@@ -134,5 +136,5 @@ for epoch in range(num_epochs):
     val_loss = validate_epoch(model, val_loader, criterion, device)
     print(f'Epoch {epoch+1}/{num_epochs} - Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}')
 
-torch.save(model.state_dict(), './cnn_v1_state.pth')
-torch.save(model, './cnn_v1.pth')
+torch.save(model.state_dict(), './cnn_v3_state.pth')
+torch.save(model, './cnn_v3_pth')

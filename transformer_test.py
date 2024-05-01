@@ -21,7 +21,7 @@ def process_labels(value):
     return [int(v) for v in value.split(';')]
 
 # Load test data
-directory_path_test = './mfcc_post_processing_test'
+directory_path_test = './mfcc_post_processing'
 file_pattern = "*.csv"
 csv_files_test = glob.glob(os.path.join(directory_path_test, file_pattern))
 dataframes_test = []
@@ -74,7 +74,7 @@ class InstrumentClassifier(nn.Module):
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = InstrumentClassifier(num_features=test_features.shape[1], num_classes=len(all_labels)).to(device)
-model_path = "./model_dump/10percent_trans/transformer_v1_state.pth"  # Update with the actual model file path
+model_path = "./model_dump/100percent_trans/transformer_v1_state.pth"  # Update with the actual model file path
 model.load_state_dict(torch.load(model_path, map_location=device))
 model.eval()
 
@@ -84,6 +84,7 @@ model_predictions = []
 # Evaluate the model
 with torch.no_grad():
     for inputs, labels in test_loader:
+        print("model yapping")
         inputs, labels = inputs.to(device), labels.to(device)
         outputs = model(inputs)
         predicted_labels = torch.sigmoid(outputs)  # Apply sigmoid to convert to probabilities

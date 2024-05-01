@@ -27,14 +27,14 @@ class InstrumentClassifier(nn.Module):
         embedded = self.embedding(src)
         transformer_output = self.transformer_encoder(embedded)
         output = self.output_layer(transformer_output[:, 0, :] if transformer_output.dim() == 3 else transformer_output)
-        return output
+        return torch.sigmoid(output)
 
 def objective(trial):
     # Load and prepare the data
     directory_path_train = './mfcc_post_processing'
     file_pattern = "*.csv"
     csv_files_train = glob.glob(os.path.join(directory_path_train, file_pattern))
-    sample_percentage = 1
+    sample_percentage = 10
     num_files_to_sample = int(len(csv_files_train) * (sample_percentage / 100.0))
     csv_files_train = random.sample(csv_files_train, num_files_to_sample)
     dataframes_train = []
@@ -46,10 +46,11 @@ def objective(trial):
     def process_labels(value):
         value = str(value)
         return [int(v) for v in value.split(';')]
-    
+
     features = pd_train.drop('Instruments', axis=1)
     labels = pd_train['Instruments'].apply(process_labels)
-    mlb = MultiLabelBinarizer()
+    all_labels = list(range(0,12)) 
+    mlb = MultiLabelBinarizer(classes = all_labels)
     labels = mlb.fit_transform(labels)  # Apply MultiLabelBinarizer
 
     # Hyperparameters to tune
@@ -81,7 +82,7 @@ def objective(trial):
     # Model initialization
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = InstrumentClassifier(train_features.shape[1], train_labels.shape[1], dim_model, nhead, num_layers, dropout).to(device)
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=lr)
 
     # Training loop
@@ -112,7 +113,7 @@ def objective(trial):
 
 # Running the study
 study = optuna.create_study(direction='minimize')
-study.optimize(objective, n_trials=50)  # Adjust the number of trials based on time/resources
+study.optimize(objective, n_trials=5)  # Adjust the number of trials based on time/resources
 
 print("Best hyperparameters: ", study.best_params)
 

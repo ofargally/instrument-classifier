@@ -65,16 +65,19 @@ class CNN(nn.Module): ##THIS NEEDS TO BE HEAVILY EDITTED IDK WHAT IM DOING ><
         x = self.pool(x)
         x = self.conv2(x)
         x = self.relu(x)
-        print(x.shape)
+        #print(x.shape)
         x = self.pool(x)
-        print(x.shape)
+        #print(x.shape)
         x = torch.flatten(x,1)
         x = self.fc1(x)
         return torch.sigmoid(x)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = CNN(input_size = 13, hidden_size=32, num_layers=2, num_classes=3).to(device)
-model_path = "./cnn_v1_state.pth"  # Provide the path to your .pth file
+model_path = "./cnn_v2_state.pth"  # Provide the path to your .pth file
+##THE MODEL CNN_V2 IS HIGH RECALL 
+##MODEL CNN_V1 HAS LOW HAMMING LOSS
+
 model.load_state_dict(torch.load(model_path))
 model.eval()
 
@@ -97,9 +100,10 @@ with torch.no_grad():
         true_labels.extend(labels.cpu().numpy())
         model_predictions.extend(predicted_labels.cpu().numpy())
 
+
 # Calculate performance metrics
-#print(len(true_labels))
-#print(len(model_predictions))
+print(true_labels[1:5])
+print(model_predictions[1:5])
 hamming = hamming_loss(true_labels, model_predictions)
 precision, recall, f1, _ = precision_recall_fscore_support(true_labels, model_predictions, average='macro')
 

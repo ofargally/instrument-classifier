@@ -22,7 +22,7 @@ def process_labels(value):
 directory_path_train = './mfcc_post_processing'
 file_pattern = "*.csv"
 csv_files_train = glob.glob(os.path.join(directory_path_train, file_pattern))
-sample_percentage = 100
+sample_percentage = 50
 num_files_to_sample = int(len(csv_files_train) * (sample_percentage / 100.0))
 csv_files_train = random.sample(csv_files_train, num_files_to_sample)
 dataframes_train = []
@@ -77,10 +77,10 @@ class InstrumentClassifier(nn.Module):
     def __init__(self, num_features, num_classes):
         super(InstrumentClassifier, self).__init__()
         # Hyperparameters from the finetuning results
-        dim_model = 64  # Dimension of the model
-        nhead = 2       # Number of heads in multiheadattention
-        num_layers = 3  # Number of transformer layers
-        dropout = 0.20573244238175206  # Dropout rate
+        dim_model = 128  # Dimension of the model
+        nhead = 4       # Number of heads in multiheadattention
+        num_layers = 1  # Number of transformer layers
+        dropout = 0.4287850162347976  # Dropout rate
 
         self.embedding = nn.Linear(num_features, dim_model)
         encoder_layers = TransformerEncoderLayer(d_model=dim_model, nhead=nhead, dropout=dropout, batch_first=True)
@@ -91,14 +91,14 @@ class InstrumentClassifier(nn.Module):
         embedded = self.embedding(src)
         transformer_output = self.transformer_encoder(embedded)
         output = self.output_layer(transformer_output[:, 0, :] if transformer_output.dim() == 3 else transformer_output)
-        return output
+        return torch.sigmoid(output)
 
 # Initialize and train the model
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = InstrumentClassifier(num_features=train_features.shape[1], num_classes=train_labels.shape[1]).to(device)
 print("passed the model instance creation")
-criterion = nn.CrossEntropyLoss()
-lr = 5.079461326345639e-05  # Learning rate from the finetuning results
+criterion = nn.BCELoss()
+lr = 5.4983460602996186e-05  # Learning rate from the finetuning results
 optimizer = optim.Adam(model.parameters(), lr=lr)
 print("passed the optimizier")
 def train_epoch(model, dataloader, criterion, optimizer, device):
