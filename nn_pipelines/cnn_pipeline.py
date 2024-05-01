@@ -25,16 +25,16 @@ for file in csv_files_train:
     dataframes_train.append(df)
 pd_train = pd.concat(dataframes_train, ignore_index=True)
 
-
-
 # Process labels for multi-label classification
 def process_labels(value):
     value = str(value)
     return [int(v) for v in value.split(';')]
     
 labels = pd_train['Instruments'].apply(process_labels)
-mlb = MultiLabelBinarizer()
+all_labels = list(range(0,12)) 
+mlb = MultiLabelBinarizer(classes = all_labels)
 labels_encoded = mlb.fit_transform(labels)
+
 
 # Prepare features
 features = pd_train.drop('Instruments', axis=1)
@@ -75,26 +75,35 @@ class CNN(nn.Module): ##THIS NEEDS TO BE HEAVILY EDITTED IDK WHAT IM DOING ><
         self.conv1 = nn.Conv1d(32, 64, kernel_size=3, stride=1)
         self.relu = nn.ReLU()
         self.conv2 = nn.Conv1d(64, hidden_size, kernel_size=3, stride=1)
-        self.pool = nn.MaxPool1d(2, stride=2)
+        self.pool = nn.MaxPool1d(2, stride=1)
         
         # Fully connected layers
-        self.fc1 = nn.Linear(9, 6)  
+        self.fc1 = nn.Linear(7, 12)  
     def forward(self, x):
         # Define the forward pass of your CNN
         x = self.conv1(x)
         x = self.relu(x)
+        x = self.pool(x)
         x = self.conv2(x)
         x = self.relu(x)
+        #print(x.shape)
+        x = self.pool(x)
+        #print(x.shape)
         x = torch.flatten(x,1)
         x = self.fc1(x)
         return torch.sigmoid(x)
 
 # Step 3: Training Loop
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = CNN(input_size=train_features.shape[1], hidden_size=32, num_layers=2, num_classes=train_labels.shape[1]).to(device)
-criterion = nn.BCEWithLogitsLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
-num_epochs = 10
+input_size = train_features.shape[1]
+num_classes = train_labels.shape[1]
+print(input_size, num_classes)
+model = CNN(input_size=train_features.shape[1], hidden_size=32, num_layers=5, num_classes=train_labels.shape[1]).to(device)
+model_path = "./cnn_v2_state.pth"  # Provide the path to your .pth file
+model.load_state_dict(torch.load(model_path))
+criterion = nn.BCELoss()
+optimizer = optim.SGD(model.parameters(), lr=0.001)
+num_epochs = 40
 
 def train_epoch(model, dataloader, criterion, optimizer, device):
     model.train()
@@ -127,5 +136,5 @@ for epoch in range(num_epochs):
     val_loss = validate_epoch(model, val_loader, criterion, device)
     print(f'Epoch {epoch+1}/{num_epochs} - Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}')
 
-torch.save(model.state_dict(), './cnn_v2_state.pth')
-torch.save(model, './cnn_v2.pth')
+torch.save(model.state_dict(), './cnn_v3_state.pth')
+torch.save(model, './cnn_v3_pth')

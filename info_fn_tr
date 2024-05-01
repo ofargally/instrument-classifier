@@ -1,0 +1,16 @@
+ Trial 0 finished with value: 
+ 0.040401828167881376 and parameters:
+  {'dim_model': 128, 'nhead': 4, 'num_layers': 1,
+   'dropout': 0.4287850162347976, 'lr': 5.4983460602996186e-05,
+    'batch_size': 64}. 
+    Best is trial 0 with value: 0.040401828167881376.
+
+
+
+
+      _warn_prf(average, modifier, f"{metric.capitalize()} is", len(result))
+Hamming Loss: 0.1432
+Precision: 0.1729
+Recall: 0.4922
+F1-Score: 0.2391
+PS C:\Users\Colgate E-Sports 2\OneDrive\Documents\cosc410_project\instrument-classifier> 
