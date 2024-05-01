@@ -136,5 +136,5 @@ for epoch in range(num_epochs):
     val_loss = validate_epoch(model, val_loader, criterion, device)
     print(f'Epoch {epoch+1}/{num_epochs} - Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}')
 
-torch.save(model.state_dict(), './cnn_v3_state.pth')
-torch.save(model, './cnn_v3_pth')
+torch.save(model.state_dict(), './cnn_v4_state.pth')
+torch.save(model, './cnn_v4_pth')

@@ -96,6 +96,8 @@ class InstrumentClassifier(nn.Module):
 # Initialize and train the model
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = InstrumentClassifier(num_features=train_features.shape[1], num_classes=train_labels.shape[1]).to(device)
+model_path = "./model_dump/100percent_trans/transformer_v1_state.pth"  # Provide the path to your .pth file
+model.load_state_dict(torch.load(model_path))
 print("passed the model instance creation")
 criterion = nn.BCELoss()
 lr = 5.4983460602996186e-05  # Learning rate from the finetuning results
@@ -126,7 +128,7 @@ def validate_epoch(model, dataloader, criterion, device):
     return running_loss / len(dataloader.dataset)
 
 # Training loop
-num_epochs = 5
+num_epochs = 40
 for epoch in range(num_epochs):
     print("epoch number: " + str(epoch))
     train_loss = train_epoch(model, train_loader, criterion, optimizer, device)
@@ -134,7 +136,7 @@ for epoch in range(num_epochs):
     print(f'Epoch {epoch+1}/{num_epochs} - Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}')
 
 # Save the trained model and scaler
-torch.save(model.state_dict(), './transformer_v1_state.pth')
-torch.save(model, './transformer_v1.pth')
+torch.save(model.state_dict(), './transformer_v2_state.pth')
+torch.save(model, './transformer_v2.pth')
 
 print('Finished Training')
