@@ -14,6 +14,10 @@ from sklearn.preprocessing import StandardScaler, MultiLabelBinarizer
 from torch.utils.data import DataLoader, TensorDataset
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import roc_curve, roc_auc_score
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Process labels for multi-label classification
 def process_labels(value):
@@ -21,7 +25,7 @@ def process_labels(value):
     return [int(v) for v in value.split(';')]
 
 # Load test data
-directory_path_test = './mfcc_post_processing'
+directory_path_test = './mfcc_post_processing_test'
 file_pattern = "*.csv"
 csv_files_test = glob.glob(os.path.join(directory_path_test, file_pattern))
 dataframes_test = []
@@ -74,29 +78,47 @@ class InstrumentClassifier(nn.Module):
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = InstrumentClassifier(num_features=test_features.shape[1], num_classes=len(all_labels)).to(device)
-model_path = "./model_dump/100percent_trans/transformer_v1_state.pth"  # Update with the actual model file path
+model_path = "transformer_v1_state.pth"  # Update with the actual model file path
 model.load_state_dict(torch.load(model_path, map_location=device))
 model.eval()
 
 true_labels = []
 model_predictions = []
-
+model_predictions_prob = []
 # Evaluate the model
 with torch.no_grad():
     for inputs, labels in test_loader:
-        print("model yapping")
         inputs, labels = inputs.to(device), labels.to(device)
         outputs = model(inputs)
         predicted_labels = torch.sigmoid(outputs)  # Apply sigmoid to convert to probabilities
+        model_predictions_prob.extend(predicted_labels.cpu().numpy())
         predicted_labels = (predicted_labels > 0.5).float()  # Binarize the output
         true_labels.extend(labels.cpu().numpy())
         model_predictions.extend(predicted_labels.cpu().numpy())
 
 # Calculate performance metrics
 hamming = hamming_loss(true_labels, model_predictions)
-precision, recall, f1, _ = precision_recall_fscore_support(true_labels, model_predictions, average='macro')
+precision, recall, f1, _ = precision_recall_fscore_support(true_labels, model_predictions, average='macro', zero_division = 0)
+
 
 print(f'Hamming Loss: {hamming:.4f}')
 print(f'Precision: {precision:.4f}')
 print(f'Recall: {recall:.4f}')
 print(f'F1-Score: {f1:.4f}')
+
+
+model_predictions_prob = np.array(model_predictions_prob)
+true_labels = np.array(true_labels)
+
+for i in range(model_predictions_prob.shape[1]):
+    fpr, tpr, thresholds = roc_curve(true_labels[:, i], model_predictions_prob[:, i])
+    plt.plot(fpr, tpr, label=f'Label {i}')
+
+# Add labels and title
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC Curve for Each Label')
+plt.legend(loc='best')
+
+# Display the plot
+plt.show()
