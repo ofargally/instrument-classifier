@@ -15,7 +15,7 @@ directory_path_train = './mfcc_post_processing'
 random.seed(666)
 file_pattern = "*.csv"
 csv_files_train = glob.glob(os.path.join(directory_path_train, file_pattern))
-sample_percentage = 50
+sample_percentage = 100
 num_files_to_sample = int(len(csv_files_train) * (sample_percentage / 100.0))
 csv_files_train = random.sample(csv_files_train, num_files_to_sample)
 dataframes_train = []
@@ -99,11 +99,11 @@ input_size = train_features.shape[1]
 num_classes = train_labels.shape[1]
 print(input_size, num_classes)
 model = CNN(input_size=train_features.shape[1], hidden_size=32, num_layers=5, num_classes=train_labels.shape[1]).to(device)
-model_path = "./cnn_v1_state.pth"  # Provide the path to your .pth file
+model_path = "./cnn_v2_state.pth"  # Provide the path to your .pth file
 model.load_state_dict(torch.load(model_path))
 criterion = nn.BCELoss()
 optimizer = optim.SGD(model.parameters(), lr=0.001)
-num_epochs = 10
+num_epochs = 40
 
 def train_epoch(model, dataloader, criterion, optimizer, device):
     model.train()
