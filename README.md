@@ -1,10 +1,10 @@
-# instrument-classifier - Musical Instrument Classification Using Deep Learning
+# Instrument-classifier - Musical Instrument Classification Using Deep Learning
 
 A full Poster Presentation for this Project can be found using this link:
 https://docs.google.com/presentation/d/18IBeH0pW_7lbweRn_8ji28IWwwTs_9tHs45XLeV4qJg/edit?usp=sharing
 
 
-![Project Banner](https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.youtube.com%2Fchannel%2FUCIaAg3QS1C7zzb0At46WtJg&psig=AOvVaw31PhFmpVe-mvpa1vuvxZLR&ust=1727826395486000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCPC2j4nt64gDFQAAAAAdAAAAABAJ) <!-- Optional: Add a relevant banner image -->
+![Project Banner]()
 
 ## Table of Contents
 
@@ -68,7 +68,7 @@ Musical instrument classification in polyphonic music presents unique challenges
 - **Description:** MusicNet is a curated dataset consisting of over 300 annotated classical music recordings.
 - **Content:** Contains more than 120 instrument types, which we have grouped into **12 predefined classes** for this classification task.
 - **Annotations:** Each `.wav` file is meticulously annotated note by note, including start time, end time, and the instrument playing each note.
-- **Source:** [MusicNet Dataset](https://homes.cs.washington.edu/~thickstn/musicnet.html)
+- **Source:** [MusicNet Dataset](https://www.kaggle.com/datasets/imsparsh/musicnet-dataset)
 
 ### MFCCs
 
@@ -125,7 +125,7 @@ To assess the performance of our models, we employed the following metrics:
 ![Figure 1: Heatmap of Model Performance Metrics](figure1_heatmap.png)
 *Figure 1. Heatmap of Model Performance Metrics.*
 
-![Figure 2: ROC Curve for Transformer Model](figure2_roc_curve.png)
+![Figure 2: ROC Curve for Transformer Model](https://drive.google.com/file/d/1AxC1eKfX7Q4TzR96tX-aqFKQRNxZQWD_/view?usp=sharing)
 *Figure 2. ROC Curve for Transformer Model.*
 
 ## Summary and Conclusion
