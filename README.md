@@ -121,11 +121,13 @@ To assess the performance of our models, we employed the following metrics:
 - **Figure 1:** Heatmap of Model Performance Metrics comparing CNN models with different loss functions and the Transformer model. We take the inverse of Hamming Loss for consistency, so scores near 1.0 are preferable for that metric.
 
 <img width="808" alt="HEAT" src="https://github.com/user-attachments/assets/a3c3529d-86d4-41fc-8d17-ab773cd276d3">
+
 *Figure 1. Heatmap of Model Performance Metrics.*
 
 - **Figure 2:** ROC Curve for Transformer Model showcasing the model’s ability to predict each instrument class effectively.
   
-*<img width="975" alt="ROC_Curve" src="https://github.com/user-attachments/assets/f23ddf7d-4a72-47e6-94de-f03ba2cedf47">
+<img width="975" alt="ROC_Curve" src="https://github.com/user-attachments/assets/f23ddf7d-4a72-47e6-94de-f03ba2cedf47">
+
 *Figure 2. ROC Curve for Transformer Model.
 
 
