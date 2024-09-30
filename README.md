@@ -4,8 +4,6 @@ A full Poster Presentation for this Project can be found using this link:
 https://docs.google.com/presentation/d/18IBeH0pW_7lbweRn_8ji28IWwwTs_9tHs45XLeV4qJg/edit?usp=sharing
 
 
-![Project Banner]()
-
 ## Table of Contents
 
 - [Introduction](#introduction)
@@ -128,7 +126,7 @@ To assess the performance of our models, we employed the following metrics:
   
 <img width="975" alt="ROC_Curve" src="https://github.com/user-attachments/assets/f23ddf7d-4a72-47e6-94de-f03ba2cedf47">
 
-*Figure 2. ROC Curve for Transformer Model.
+*Figure 2. ROC Curve for Transformer Model.*
 
 
 
