@@ -125,7 +125,7 @@ To assess the performance of our models, we employed the following metrics:
 ![Figure 1: Heatmap of Model Performance Metrics](figure1_heatmap.png)
 *Figure 1. Heatmap of Model Performance Metrics.*
 
-![Figure 2: ROC Curve for Transformer Model](https://drive.google.com/file/d/1AxC1eKfX7Q4TzR96tX-aqFKQRNxZQWD_/view?usp=sharing)
+![Figure 2: ROC Curve for Transformer Model]('https://drive.google.com/file/d/1AxC1eKfX7Q4TzR96tX-aqFKQRNxZQWD_/view?usp=sharing')
 *Figure 2. ROC Curve for Transformer Model.*
 
 ## Summary and Conclusion
